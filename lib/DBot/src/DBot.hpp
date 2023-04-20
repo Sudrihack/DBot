@@ -3,23 +3,23 @@
 #include <Communication.hpp>
 #include <Light.hpp>
 
-class Doggy
+class DBot
 {
 private:
 public:
-    Doggy();
+    DBot();
     Light *light;
     Move *move;
     Communication *communication;
-    void log(char *message);
+    void log(String message);
 };
 
-Doggy::Doggy()
+DBot::DBot()
 {
     Serial.begin(9600);
 }
 
-void Doggy::log(char *message)
+void DBot::log(String message)
 {
     Serial.println(message);
 }

@@ -26,9 +26,6 @@ public:
     void advance();
 };
 
-Move::~Move()
-{
-}
 
 Move::Move(
     int frontRightLeg1,
