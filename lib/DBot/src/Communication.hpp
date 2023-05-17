@@ -15,7 +15,6 @@ struct UDPPacket
     String data;
 };
 
-
 class Communication
 {
 private:
@@ -24,7 +23,6 @@ private:
     WiFiManager wifiManager;
     AsyncUDP udp;
     UDPPacket lastUDPPacket;
-    String lastUDPPacketData;
 
 public:
     BluetoothSerial bluetooth;
@@ -33,7 +31,7 @@ public:
     void startWifiManager();
     void startUDPServer(int port, void (*callback)(AsyncUDPPacket packet));
     void startUDPServer(int port);
-    void setLastUDPPacket(AsyncUDPPacket packet);
+    int UDPAvailable();
     UDPPacket getLastUDPPacket();
     int getID();
     void setName(String name);
@@ -75,17 +73,18 @@ void Communication::startBluetooth()
     {
         bluetooth.setPin(devicePin.c_str());
     }
-    Serial.printf("The device with name \"%s\" is started.\n", deviceName.c_str());
+    Serial.printf("Bluetooth started with name:  \"%s\"", deviceName.c_str());
 }
-String Communication::getBluetoothData(){
+String Communication::getBluetoothData()
+{
     return bluetooth.readString();
 }
 
 void Communication::startWifiManager()
 {
     wifiManager.setConfigPortalTimeout(180);
-    // wifiManager.autoConnect(deviceName.c_str(), devicePin.c_str());
-    wifiManager.autoConnect();
+    wifiManager.autoConnect((const char *)deviceName.c_str(), (const char *)devicePin.c_str());
+    // wifiManager.autoConnect();
 }
 
 void Communication::startUDPServer(int port, void (*callback)(AsyncUDPPacket packet))
@@ -101,30 +100,30 @@ void Communication::startUDPServer(int port)
     {
         udp.onPacket([&](AsyncUDPPacket packet)
                      {
-            Serial.print("Data: ");
-            Serial.write(packet.data(), packet.length());
-            setLastUDPPacket(packet);
-            Serial.println(); });
+            String stringData = (const char *)packet.data();
+            lastUDPPacket = {
+                packet.remoteIP(),
+                packet.remotePort(),
+                packet.localIP(),
+                packet.localPort(),
+                packet.length(),
+                packet.isBroadcast(),
+                packet.isMulticast(),
+                stringData
+            }; });
     }
 }
 
-void Communication::setLastUDPPacket(AsyncUDPPacket packet)
+int Communication::UDPAvailable()
 {
-    String stringData = (const char *)packet.data();
-    lastUDPPacket = {
-        packet.remoteIP(),
-        packet.remotePort(),
-        packet.localIP(),
-        packet.localPort(),
-        packet.length(),
-        packet.isBroadcast(),
-        packet.isMulticast(),
-        stringData};
+    return lastUDPPacket.length > 0;
 }
 
 UDPPacket Communication::getLastUDPPacket()
 {
-    return lastUDPPacket;
+    UDPPacket packet = lastUDPPacket;
+    lastUDPPacket.length = 0;
+    return packet;
 }
 
 int Communication::bluetoothAvailable()

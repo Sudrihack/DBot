@@ -9,9 +9,9 @@ void setup()
   robot->log("Robot initialise");
   robot->log("UID: ");
   robot->log(robot->communication->getID());
-  robot->communication->setPin("0001");
+  robot->communication->setPin("azertyuiop");
   robot->communication->setName("DBot");
-  // robot->communication->startBluetooth();
+  robot->communication->startBluetooth();
   robot->communication->startWifiManager();
   robot->communication->startUDPServer(80);
 }
@@ -21,7 +21,16 @@ void loop()
   if (robot->communication->bluetoothAvailable())
   {
     robot->log("New message via Bluetooth");
+    robot->log("Data: ");
     robot->log(robot->communication->getBluetoothData());
-    robot->communication->bluetoothSend("Message recu 5 sur 5 mon géneral!");
+  }
+  
+  if (robot->communication->UDPAvailable())
+  {
+    robot->log("New message via UDP");
+    robot->log("Data: ");
+    robot->log(robot->communication->getLastUDPPacket().data);
+    robot->log("From IP: ");
+    robot->log(robot->communication->getLastUDPPacket().fromIP);
   }
 }
