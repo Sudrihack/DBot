@@ -85,7 +85,6 @@ void Communication::startWifiManager()
 {
     wifiManager.setConfigPortalTimeout(180);
     // wifiManager.autoConnect(deviceName.c_str(), devicePin.c_str());
-    // wifiManager.WiFiManagerInit();
     wifiManager.autoConnect();
 }
 
