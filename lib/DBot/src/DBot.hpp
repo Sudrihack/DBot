@@ -12,14 +12,23 @@ public:
     Move *move;
     Communication *communication;
     void log(String message);
+    void log(int message);
 };
 
 DBot::DBot()
 {
     Serial.begin(9600);
+    // light = new Light();
+    // move = new Move();
+    communication = new Communication();
 }
 
 void DBot::log(String message)
+{
+    Serial.println(message);
+}
+
+void DBot::log(int message)
 {
     Serial.println(message);
 }

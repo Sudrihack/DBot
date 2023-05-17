@@ -1,9 +1,7 @@
 #include <BluetoothSerial.h>
 #include <WiFiManager.h>
 #include <WiFi.h>
-#include "AsyncUDP.h"
-#include <string>
-#include <vector>
+#include <AsyncUDP.h>
 
 struct UDPPacket
 {
@@ -16,12 +14,13 @@ struct UDPPacket
     bool isMulticast;
     String data;
 };
-// class pour 
+
+
 class Communication
 {
 private:
     String deviceName = "DBot";
-    String devicePin = "";
+    String devicePin = "0001";
     WiFiManager wifiManager;
     AsyncUDP udp;
     UDPPacket lastUDPPacket;
@@ -41,6 +40,7 @@ public:
     void setPin(String pin);
     int bluetoothAvailable();
     void bluetoothSend(String message);
+    String getBluetoothData();
 };
 
 Communication::Communication()
@@ -60,7 +60,7 @@ void Communication::setPin(String pin)
 
 int Communication::getID()
 {
-    uint32_t id = 0;
+    int id = 0;
     for (int i = 0; i < 17; i = i + 8)
     {
         id |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
@@ -77,11 +77,16 @@ void Communication::startBluetooth()
     }
     Serial.printf("The device with name \"%s\" is started.\n", deviceName.c_str());
 }
+String Communication::getBluetoothData(){
+    return bluetooth.readString();
+}
 
 void Communication::startWifiManager()
 {
     wifiManager.setConfigPortalTimeout(180);
-    wifiManager.autoConnect(deviceName.c_str(), devicePin.c_str());
+    // wifiManager.autoConnect(deviceName.c_str(), devicePin.c_str());
+    // wifiManager.WiFiManagerInit();
+    wifiManager.autoConnect();
 }
 
 void Communication::startUDPServer(int port, void (*callback)(AsyncUDPPacket packet))
