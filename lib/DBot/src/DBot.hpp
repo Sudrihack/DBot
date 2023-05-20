@@ -18,8 +18,6 @@ public:
 DBot::DBot()
 {
     Serial.begin(9600);
-    // light = new Light();
-    // move = new Move();
     communication = new Communication();
 }
 

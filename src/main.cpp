@@ -7,10 +7,9 @@ void setup()
   robot = new DBot();
   robot->light->blink(4, 2000);
   robot->log("Robot initialise");
-  robot->log("UID: ");
-  robot->log(robot->communication->getID());
-  robot->communication->setPin("azertyuiop");
-  robot->communication->setName("DBot");
+  robot->log("UID: " + (String)robot->communication->getID());
+  // robot->communication->setName("FirstDBot");
+  // robot->communication->setPin("securepassword");
   robot->communication->startBluetooth();
   robot->communication->startWifiManager();
   robot->communication->startUDPServer(80);
@@ -24,7 +23,6 @@ void loop()
     robot->log("Data: ");
     robot->log(robot->communication->getBluetoothData());
   }
-  
   if (robot->communication->UDPAvailable())
   {
     robot->log("New message via UDP");

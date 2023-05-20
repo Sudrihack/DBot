@@ -19,31 +19,30 @@ class Communication
 {
 private:
     String deviceName = "DBot";
-    String devicePin = "0001";
+    String devicePin = "";
     WiFiManager wifiManager;
     AsyncUDP udp;
     UDPPacket lastUDPPacket;
+    BluetoothSerial bluetooth;
 
 public:
-    BluetoothSerial bluetooth;
     Communication();
     void startBluetooth();
     void startWifiManager();
-    void startUDPServer(int port, void (*callback)(AsyncUDPPacket packet));
     void startUDPServer(int port);
     int UDPAvailable();
     UDPPacket getLastUDPPacket();
-    int getID();
-    void setName(String name);
-    void setPin(String pin);
     int bluetoothAvailable();
     void bluetoothSend(String message);
     String getBluetoothData();
+    int getID();
+    void setName(String name);
+    void setPin(String pin);
 };
 
 Communication::Communication()
 {
-    setName("DBot-" + getID());
+    setName("DBot-" + (String)getID());
 }
 
 void Communication::setName(String name)
@@ -58,12 +57,7 @@ void Communication::setPin(String pin)
 
 int Communication::getID()
 {
-    int id = 0;
-    for (int i = 0; i < 17; i = i + 8)
-    {
-        id |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
-    }
-    return id;
+    return (uint16_t)ESP.getEfuseMac();
 }
 
 void Communication::startBluetooth()
@@ -83,15 +77,14 @@ String Communication::getBluetoothData()
 void Communication::startWifiManager()
 {
     wifiManager.setConfigPortalTimeout(180);
-    wifiManager.autoConnect((const char *)deviceName.c_str(), (const char *)devicePin.c_str());
-    // wifiManager.autoConnect();
-}
-
-void Communication::startUDPServer(int port, void (*callback)(AsyncUDPPacket packet))
-{
-    udp.listen(port);
-    Serial.print("UDP Listening on IP: ");
-    Serial.println(WiFi.localIP());
+    if (devicePin.length() > 0)
+    {
+        wifiManager.autoConnect((const char *)deviceName.c_str(), (const char *)devicePin.c_str());
+    }
+    else
+    {
+        wifiManager.autoConnect((const char *)deviceName.c_str());
+    }
 }
 
 void Communication::startUDPServer(int port)
@@ -100,7 +93,7 @@ void Communication::startUDPServer(int port)
     {
         udp.onPacket([&](AsyncUDPPacket packet)
                      {
-            String stringData = (const char *)packet.data();
+            String stringData = (char *)packet.data();
             lastUDPPacket = {
                 packet.remoteIP(),
                 packet.remotePort(),
