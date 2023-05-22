@@ -18,8 +18,8 @@ struct UDPPacket
 class Communication
 {
 private:
-    String deviceName = "DBot";
-    String devicePin = "";
+    String deviceName;
+    String devicePin;
     WiFiManager wifiManager;
     AsyncUDP udp;
     UDPPacket lastUDPPacket;
@@ -43,6 +43,7 @@ public:
 Communication::Communication()
 {
     setName("DBot-" + (String)getID());
+    setName("password" + (String)getID());
 }
 
 void Communication::setName(String name)

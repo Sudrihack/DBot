@@ -8,8 +8,8 @@ void setup()
   robot->light->blink(4, 2000);
   robot->log("Robot initialise");
   robot->log("UID: " + (String)robot->communication->getID());
-  // robot->communication->setName("FirstDBot");
-  // robot->communication->setPin("securepassword");
+  robot->communication->setName("TestDBot");
+  robot->communication->setPin("passwordDBot");
   robot->communication->startBluetooth();
   robot->communication->startWifiManager();
   robot->communication->startUDPServer(80);
