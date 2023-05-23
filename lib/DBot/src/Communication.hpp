@@ -15,6 +15,12 @@ struct UDPPacket
     String data;
 };
 
+struct BluetoothPacket
+{
+    uint length;
+    String data;
+};
+
 class Communication
 {
 private:
@@ -23,7 +29,9 @@ private:
     WiFiManager wifiManager;
     AsyncUDP udp;
     UDPPacket lastUDPPacket;
+    BluetoothPacket lastBluetoothPacket;
     BluetoothSerial bluetooth;
+    static BluetoothSerialDataCb onBluetoothDataReceived();
 
 public:
     Communication();
@@ -35,6 +43,7 @@ public:
     int bluetoothAvailable();
     void bluetoothSend(String message);
     String getBluetoothData();
+    String getLastBluetoothPacket();
     int getID();
     void setName(String name);
     void setPin(String pin);
@@ -61,6 +70,14 @@ int Communication::getID()
     return (uint16_t)ESP.getEfuseMac();
 }
 
+BluetoothSerialDataCb Communication::onBluetoothDataReceived()
+{
+    String stringData = bluetooth.readString();
+    lastBluetoothPacket = {
+        stringData.length(),
+        stringData};
+}
+
 void Communication::startBluetooth()
 {
     bluetooth.begin(deviceName);
@@ -69,7 +86,10 @@ void Communication::startBluetooth()
         bluetooth.setPin(devicePin.c_str());
     }
     Serial.printf("Bluetooth started with name:  \"%s\"", deviceName.c_str());
+    // bluetooth.register_callback(onBluetoothDataReceived);
+    bluetooth.onData(onBluetoothDataReceived);
 }
+
 String Communication::getBluetoothData()
 {
     return bluetooth.readString();
