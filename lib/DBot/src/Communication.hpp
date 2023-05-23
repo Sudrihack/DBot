@@ -31,7 +31,7 @@ private:
     UDPPacket lastUDPPacket;
     BluetoothPacket lastBluetoothPacket;
     BluetoothSerial bluetooth;
-    static BluetoothSerialDataCb onBluetoothDataReceived();
+    void onBluetoothDataReceived();
 
 public:
     Communication();
@@ -70,7 +70,7 @@ int Communication::getID()
     return (uint16_t)ESP.getEfuseMac();
 }
 
-BluetoothSerialDataCb Communication::onBluetoothDataReceived()
+void Communication::onBluetoothDataReceived()
 {
     String stringData = bluetooth.readString();
     lastBluetoothPacket = {
