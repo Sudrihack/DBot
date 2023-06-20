@@ -1,5 +1,5 @@
 # DBot
-
+[![DeepScan grade](https://deepscan.io/api/teams/10089/projects/24928/branches/771414/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=10089&pid=24928&bid=771414)
 Ce projet consiste en la conception et la construction d'un chien robot imprimé en 3D, utilisant une puce ESP32 pour la communication WiFi UDP et Bluetooth. Le robot est contrôlé à distance depuis un appareil externe et peut réagir à certains stimuli externes.
 
 ## Fonctionnalités
